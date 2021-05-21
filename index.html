@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang=en>
+    <head>
+      
+      
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Paytone+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet">
+        <script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-analytics.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-firestore.js"></script>
+
+        <script>
+            // Helper script
+
+            /**
+             * * Main Runtime
+             * 
+             * ? Anything which related to DOM should be run in this callback.
+             */
+            const main = (callback) => {
+                document.addEventListener("DOMContentLoaded", callback, {
+                    once: true
+                })
+            },
+                /**
+                 * ? Shorten syntax for querying for element id
+                 */
+                id = (id) => {
+                    const reference = document.getElementById(id)
+
+                    return Object.assign(reference, {
+                        on: (event, callback) => {
+                            reference.addEventListener(event, callback)
+
+                            return () => reference.removeEventListener(event, callback)
+                        }
+                    })
+                }
+            
+        </script>
+        <script defer>
+            // Firebase Setup
+            const firebaseConfig = {
+                apiKey: "AIzaSyD5rhgg2CcaxXPsPmHHzsxRawf8NtPKA3c",
+                authDomain: "fir-test-77083.firebaseapp.com",
+                projectId: "fir-test-77083",
+                storageBucket: "fir-test-77083.appspot.com",
+                messagingSenderId: "744893069485",
+                appId: "1:744893069485:web:b1c032055830b850202e24"
+            };
+
+            firebase.initializeApp(firebaseConfig);
+            firebase.analytics();
+
+            const firestore = firebase.firestore();
+            
+            /**
+             * * Main Runtime
+             * 
+             * ? Anything which related to DOM should be run here.
+             */
+          
+            main(() => {
+                /**
+                 * ? When element with id "read" is clicked.
+                 * ? The function will run.
+                 * */
+                id("read").on("click", () => {
+                    id("title").style.visibility = "visible";
+                    id("title").innerHTML = `<div class="row">
+                                                <div class="column">Name</div>
+                                                <div class="column">StudentID</div>
+                                                <div class="column">Age</div>
+                                              </div>`;
+					
+                    firestore
+                        .collection("Information")
+                        .doc("Student1")
+                        .set({
+                            FirstName: "Pithawat", SurName: "Nuckong", StudentID: 63070118, Age: 20
+                        });
+                    firestore
+                        .collection("Information")
+                        .doc("Student2")
+                        .set({
+                            FirstName: "Panupong", SurName: "Keawkam", StudentID: 63070132, Age: 20
+                        });
+                    for (var i=0; i<3; i++) {
+                        firestore
+                            .collection("Information")
+                            .doc(`Student${i+1}`)
+                            .get()
+                            .then(doc => {
+                                const data = doc.data()
+                                id("title").innerHTML += `<div class="row">
+                                                            <div class="column">${data.FirstName + ' ' + data.SurName}</div>
+                                                            <div class="column">${data.StudentID}</div>
+                                                            <div class="column">${data.Age}</div>
+                                                          </div>`;
+                            })
+                    }
+                })
+            })
+        </script>
+        <style>
+          body {
+			width: 100%;
+            height: 480px;
+            margin: 0%;
+            background: #aaa;
+          }
+          * {
+            text-align: center;
+          }
+          .contain {
+			width: 40%;
+            height: 240px;
+            margin: 5% 30% 2% 30%;
+            border-radius: 16px;
+            background: #142c3c;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+          }
+          .button {
+      		font-family: 'Paytone One', sans-serif;
+            color: #555;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+			width: 20%;
+            font-size: 24px;
+            height: 64px;
+            background: #ecb228;
+            border-radius: 12px;
+          }
+          .button:hover {
+				transform: scale(1.05);
+            filter: brightness(120%);
+            cursor: pointer;
+          }
+          #title {
+            visibility: hidden;
+      		font-family: 'Paytone One', sans-serif;
+            color: #555;
+			width: 40%;
+            /* height: 560px; */
+            height: auto;
+            margin: 2% 30% 5% 30%;
+            border-radius: 16px;
+            /* background: #eee; */
+            display: flex;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+            align-items: flex-start;
+          }
+          .column {
+            width: 33.33%;
+            height: 64px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            align-items: center;
+          }
+          .row {
+              width: 100%;
+              height: auto;
+              animation: show 1s;
+            background: #eee;
+              display: flex;
+            justify-content: center;
+            border-radius: 12px;
+          }
+          .firebase {
+              color: #eee;
+      		    font-family: 'Paytone One', sans-serif;
+              font-size: 72px;
+              margin: 16px;
+          }
+          @keyframes show {
+              0% {transform: translateY(-32px); opacity: 0;}
+              100% {transform: translateY(0px); opacity: 1;}
+          }
+      </style>
+    </head>
+    <body>
+      <div class="contain">
+        <div class="firebase">Firebase</div>
+        <div class="button" id="read">Read</div>
+      </div>
+      <div id="title"></div>
+      
+    </body>
+</html>
